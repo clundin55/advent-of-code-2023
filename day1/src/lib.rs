@@ -1,11 +1,10 @@
 pub fn trebuchet_launch(calibrations: &str) -> u32 {
     let mut calculations = Vec::new();
     for line in calibrations.lines() {
-        let digits: Vec<u32> = line
+        let digits= line
             .chars()
             .filter(|c| c.is_numeric())
-            .filter_map(|c| c.to_digit(10))
-            .collect();
+            .filter_map(|c| c.to_digit(10));
 
         let first_digit = digits.first().expect("Expected a u32");
         let second_digit = digits.last().expect("Expected a u32");
