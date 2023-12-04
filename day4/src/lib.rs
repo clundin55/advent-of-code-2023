@@ -118,6 +118,6 @@ mod tests {
     #[test]
     fn input_scratch_card_duplication() {
         let result = scratch_card_duplication(INPUT);
-        assert_eq!(result, 30);
+        assert_eq!(result, 5921508);
     }
 }
