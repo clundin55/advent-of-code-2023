@@ -40,7 +40,7 @@ fn parse_seeds(input: &str) -> Vec<u64> {
     seeds
 }
 
-fn part_two_parse_seeds_range(input: &str) -> Vec<(u64,u64)> {
+fn part_two_parse_seeds_range(input: &str) -> Vec<u64> {
     let mut seeds = Vec::new();
     for value in input.split(" ") {
         if let Ok(seed_value) = u64::from_str_radix(value, 10) {
@@ -50,65 +50,11 @@ fn part_two_parse_seeds_range(input: &str) -> Vec<(u64,u64)> {
     let mut final_seeds = Vec::new();
     let mut seeds = seeds.into_iter();
     while let Some((x, y)) = seeds.next_tuple() {
-        final_seeds.push((x, y));
+        for k in x..x+y {
+            final_seeds.push(k);
+        }
     }
     final_seeds
-}
-
-fn part_two_find_location_of_seed(seed: (u64,u64), conversion_map: &Vec<Vec<ConversionMap>>) -> u64 {
-    let mut current_start = seed.0;
-    let mut current_end = seed.1;
-    for types in conversion_map {
-        'outer: for conversion in types {
-            let source_start = conversion.source_start;
-            let source_end = conversion.source_start + conversion.range;
-            if current_start >= source_start && current_end < source_end {
-                let destination_start = conversion.destination_start;
-                let destination_end = conversion.destination_start + conversion.range;
-                let next = conversion.destination_start + (current_val - conversion.source_start);
-
-                if next >= destination_start && next < destination_end {
-                    current_val = next;
-                    break 'outer;
-                }
-            }
-        }
-    }
-    current_val
-}
-
-pub fn part_two_find_lowest_location(input: &str, part_two: bool) -> u64 {
-    let mut seeds = Vec::new();
-    let mut maps: Vec<Vec<ConversionMap>> = Vec::new();
-    for line in input.lines() {
-        match line {
-            line if line.contains("seeds:") => {
-                if part_two {
-                    seeds = part_two_parse_seeds_range(line);
-                } else {
-                    seeds = parse_seeds(line);
-                }
-            }
-            line if line.contains("map:") => {
-                maps.push(Vec::new());
-            }
-            _ => {
-                if let Some(map) = maps.last_mut() {
-                    if let Ok(conversion_map) = ConversionMap::from_str(line) {
-                        map.push(conversion_map);
-                    }
-                }
-            }
-        }
-    }
-    let location = seeds
-        .par_iter()
-        .map(|seed| find_location_of_seed(*seed, &maps))
-        .min();
-    if let Some(location) = location {
-        return location;
-    }
-    0
 }
 
 fn find_location_of_seed(seed: u64, conversion_map: &Vec<Vec<ConversionMap>>) -> u64 {
@@ -194,6 +140,6 @@ mod tests {
     #[test]
     fn input_find_lowest_location_seed_range() {
         let result = find_lowest_location(INPUT, true);
-        assert_eq!(result, 551761867);
+        assert_eq!(result, 57451709);
     }
 }
